@@ -33,17 +33,17 @@ const HomePage = () => {
   return (
     <main className="grid min-h-screen bg-[rgb(var(--background))] p-6">
       <div className="text-center">
-        <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Current Products 🚀</h1>
+        <h1 className="text-3xl font-semibold tracking-tight  text-[rgb(var(--copy-primary))]">Current Products 🚀</h1>
 
         {loading && <p className="mt-6 text-lg text-gray-500">Loading products...</p>}
 
         {error && <p className="mt-6 text-lg text-red-500">Error: {error}</p>}
 
-        <div className="grid gap-6 mt-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 mt-8 place-items-center md:grid-cols-2 lg:grid-cols-3">
           {products.length > 0
             ? products.map((product) => <ProductCard key={product._id} product={product} />)
             : !loading && (
-                <div className="col-span-full text-xl font-bold text-gray-500">
+                <div className="col-span-full text-2xl font-bold text-gray-500">
                   No products found 😢{" "}
                   <Link to="/create" className="text-blue-500 hover:underline">
                     Create a product

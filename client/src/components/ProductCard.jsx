@@ -55,8 +55,8 @@ const ProductCard = ({ product }) => {
 
       {/* Product Details */}
       <div className="p-4">
-        <h5 className="mb-1 text-2xl font-semibold text-[rgb(var(--copy-primary))]">{product.name}</h5>
-        <p className="text-md text-[rgb(var(--copy-primary))]">${product.price}</p>
+        <h5 className="mb-1 text-3xl font-semibold text-[rgb(var(--copy-primary))]">{product.name}</h5>
+        <p className="text-xl font-semibold text-[rgb(var(--copy-primary))]">${product.price}</p>
       </div>
 
       {/* Action Buttons */}
