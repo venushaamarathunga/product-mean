@@ -31,7 +31,7 @@ const HomePage = () => {
   }, []);
 
   return (
-    <main className="grid min-h-screen bg-[rgb(var(--background))] p-6">
+    <main className="grid min-h-screen bg-[rgb(var(--background))] p-6 mt-10">
       <div className="text-center">
         <h1 className="text-3xl font-semibold tracking-tight  text-[rgb(var(--copy-primary))]">Current Products 🚀</h1>
 
