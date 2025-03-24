@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 
 export default function CreateProductPage() {
   const [newProduct, setNewProduct] = useState({
@@ -16,24 +17,14 @@ export default function CreateProductPage() {
     }
 
     try {
-      const res = await fetch("http://localhost:5001/api/products", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newProduct),
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to create product");
-      }
+      const res = await axios.post("http://localhost:5001/api/products", newProduct);
 
       alert("Product created successfully!");
 
       // Optionally reset form fields
       setNewProduct({ name: "", price: "", image: "" });
     } catch (error) {
-      alert(error.message);
+      alert(error.response?.data?.message || "Failed to create product");
     }
   };
 

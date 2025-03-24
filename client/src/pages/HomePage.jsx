@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
+import axios from "axios";
 
 const HomePage = () => {
   const [products, setProducts] = useState([]);
@@ -10,18 +11,15 @@ const HomePage = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:5001/api/products");
-        if (!response.ok) {
-          throw new Error("Failed to fetch products");
-        }
-        const data = await response.json();
-        if (data.success) {
-          setProducts(data.data);
+        const response = await axios.get("http://localhost:5001/api/products");
+
+        if (response.data.success) {
+          setProducts(response.data.data);
         } else {
           throw new Error("No products available");
         }
       } catch (error) {
-        setError(error.message);
+        setError(error.response?.data?.message || error.message);
       } finally {
         setLoading(false);
       }

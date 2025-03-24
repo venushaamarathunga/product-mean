@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
+import axios from "axios";
 
 const ProductCard = ({ product }) => {
   const [isOpen, setIsOpen] = useState(false); // Modal open state
@@ -11,38 +12,24 @@ const ProductCard = ({ product }) => {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
 
     try {
-      const response = await fetch(`http://localhost:5001/api/products/${pid}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete product");
-      }
+      const response = await axios.delete(`http://localhost:5001/api/products/${pid}`);
 
       alert("Product deleted successfully!");
-
-      // Reload page or update state to remove the deleted product
       window.location.reload();
     } catch (error) {
-      alert(error.message);
+      alert(error.response?.data?.message || "Failed to delete product");
     }
   };
 
   // Handle update product
   const handleUpdateProduct = async () => {
     try {
-      const response = await fetch(`http://localhost:5001/api/products/${product._id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedProduct),
-      });
-
-      if (!response.ok) throw new Error("Failed to update product");
+      const response = await axios.put(`http://localhost:5001/api/products/${product._id}`, updatedProduct);
 
       alert("Product updated successfully!");
-      setIsOpen(false); // Close modal after update
+      setIsOpen(false);
     } catch (error) {
-      alert(error.message);
+      alert(error.response?.data?.message || "Failed to update product");
     }
   };
 
