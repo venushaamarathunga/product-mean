@@ -3,8 +3,22 @@ import mongoose from "mongoose";
 
 export const getProducts = async (req, res) => {
   try {
-    const products = await Product.find({});
-    res.status(200).json({ success: true, data: products });
+    const { page = 1, limit = 10 } = req.query;
+    const skip = (page - 1) * limit;
+
+    const products = await Product.find({}).skip(skip).limit(parseInt(limit));
+
+    const total = await Product.countDocuments();
+
+    res.status(200).json({
+      success: true,
+      data: products,
+      pagination: {
+        total,
+        page: parseInt(page),
+        pages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     console.error(`Error : ${error.message}`);
     res.status(500).json({ success: false, message: "Server error." });
@@ -14,7 +28,7 @@ export const getProducts = async (req, res) => {
 export const createProduct = async (req, res) => {
   const product = req.body;
 
-  if (!product.name || !product.price || !product.image) {
+  if (!product.name || !product.price || !product.image || !product.category) {
     return res.status(400).json({ success: false, message: "Please add all fields." });
   }
 
@@ -42,8 +56,12 @@ export const updateProduct = async (req, res) => {
   }
 
   try {
-    const updateProduct = await Product.findByIdAndUpdate(id, product, { new: true });
-    res.status(200).json({ success: true, data: updateProduct });
+    const updatedProduct = await Product.findByIdAndUpdate(id, product, { new: true });
+
+    if (!updatedProduct) {
+      return res.status(404).json({ success: false, message: "Product not found." });
+    }
+    res.status(200).json({ success: true, data: updatedProduct });
   } catch (error) {
     console.error(`Error : ${error.message}`);
     res.status(500).json({ success: false, message: "Server Error." });
@@ -58,7 +76,10 @@ export const deleteProduct = async (req, res) => {
   }
 
   try {
-    await Product.findByIdAndDelete(id);
+    const deletedProduct = await Product.findByIdAndDelete(id);
+    if (!deletedProduct) {
+      return res.status(404).json({ success: false, message: "Product not found." });
+    }
     res.status(200).json({ success: true, data: "Delete the product." });
   } catch (error) {
     console.error(`Error : ${error.message}`);

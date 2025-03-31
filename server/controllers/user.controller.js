@@ -6,9 +6,15 @@ import mongoose from "mongoose";
 export const registerUser = async (req, res) => {
   const user = req.body;
 
-  if (!user.username || !user.email || !user.password || !user.gender || !user.address) {
+  if (!user.username || !user.email || !user.password || !user.gender || !user.address || !user.role) {
     return res.status(400).json({ success: false, message: "Please add all fields." });
   }
+  // Ensure role is valid
+  const validRoles = ["admin", "user", "customer"];
+  if (role && !validRoles.includes(role)) {
+    return res.status(400).json({ message: "Invalid role" });
+  }
+
   const userAvailable = await User.findOne({ email });
   if (!userAvailable) {
     res.status(400).json({ success: false, message: "User already registerd. " });
@@ -17,7 +23,7 @@ export const registerUser = async (req, res) => {
   // hash password
   const hashPassword = await bcrypt.hash(user.password, 15);
 
-  const newUser = new User({ username, email, password: hashPassword, gender, address });
+  const newUser = new User({ username, email, password: hashPassword, gender, address, role: role || "customer" });
 
   try {
     const registerdUser = await newUser.save();
@@ -59,8 +65,27 @@ export const currentUser = async (req, res) => {
 
 export const getUsers = async (req, res) => {
   try {
-    const users = await User.find({}).select("-password");
-    res.status(200).json({ success: true, data: users });
+    const { page = 1, limit = 20 } = req.query;
+    const skip = (page - 1) * limit;
+
+    res.status(200).json({
+      success: true,
+      data: products,
+    });
+
+    const users = await User.find({}).select("-password").skip(skip).limit(parseInt(limit));
+
+    const total = await User.countDocuments();
+
+    res.status(200).json({
+      success: true,
+      data: users,
+      pagination: {
+        total,
+        page: parseInt(page),
+        pages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     console.error(`Error : ${error.message}`);
     res.status(500).json({ success: false, message: "Server error." });
